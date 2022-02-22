@@ -15,10 +15,11 @@ Implemented so far:
     - Main menu
     - Display the master list (of lists)
     - Add new lists to the list
+    - Open a list
+    - Save lists
     - Quit
 
 TO DO:
-    - Open a list
     - Add/delete tasks
     - Delete a list
-    - Save everything to file
+    - Bad input handling
