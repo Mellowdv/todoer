@@ -21,5 +21,4 @@ Implemented so far:
 
 TO DO:
     - Add/delete tasks
-    - Delete a list
     - Bad input handling

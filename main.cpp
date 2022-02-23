@@ -22,12 +22,18 @@ bool check_empty(std::string file_name) // this expects a full file name, along 
     }
 }
 
-bool save(std::vector<std::string> &list, std::ofstream &output_file) // saves the source vector in the destination file 
+bool save(std::vector<std::string> &list, const std::string &list_name) // saves the source vector in the destination file 
 {
+    std::ofstream output_file;
+    if (list_name == list_base)
+        output_file.open(list_name);
+    else
+        output_file.open(list_name + ".txt");
     if (!output_file)
         return false;
     for (size_t i = 0; i < list.size(); i++)
         output_file << list.at(i) << std::endl;
+    output_file.close();
     return true;
 }
 
@@ -53,14 +59,13 @@ std::vector<std::string> grab_lists(const std::string &file_name) // opens a fil
     return lists_vector;
 }
 
-// if another list isn't specified, this will save in the index of lists
-std::vector<std::string> add_position(std::vector<std::string> &list, std::string list_name = list_base)
+// if another list isn't specified, this will add the position in the index of lists
+std::vector<std::string> add_position(std::vector<std::string> &list, const std::string &list_name = list_base)
 {
     int positions_added {};
     std::string user_input {};
     std::cin.ignore(1000, '\n');
-    std::ofstream output_list;
-
+    
     std::cout << "\nEnter Q to discard changes and return to the menu."
               << "\nEnter S to save all changes and return to the menu."
               << "\nPlease enter a position (list or task name): ";
@@ -74,12 +79,7 @@ std::vector<std::string> add_position(std::vector<std::string> &list, std::strin
         }
         else if (user_input == "S" || user_input == "s")
         {
-            if (list_name == list_base)
-                output_list.open(list_name);
-            else
-                output_list.open(list_name + ".txt");
-            save(list, output_list);
-            output_list.close();
+            save(list, list_name);
             return list;
         }
         else
@@ -88,6 +88,43 @@ std::vector<std::string> add_position(std::vector<std::string> &list, std::strin
             positions_added++;
             std::cout << "Position added, please enter another one, S or Q: ";
         }
+    }
+    return list;
+}
+
+// if another list isn't specified, this will delete from the index of lists
+std::vector<std::string> delete_position(std::vector<std::string> &list, const std::string &list_name = list_base)
+{
+    int position_no {0};
+    std::cin >> position_no;
+    char selection {};
+    std::cout << "Deleting position " << position_no << ", are you sure? (Y/N) ";
+    std::cin.ignore(1000, '\n');
+    if (std::cin >> selection)
+    {
+        selection = toupper(selection);
+        switch (selection)
+        {
+            case 'Y':
+            {
+                list.erase(list.begin() + (position_no - 1));
+                std::cout << "Position deleted.\n";
+                save(list, list_name);
+                break;
+            }
+            case 'N':
+            {
+                std::cout << "Position was not deleted.\n";
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    else
+    {
+        std::cin.ignore(1000, '\n');
+        std::cout << "Bad input";
     }
     return list;
 }
@@ -104,6 +141,11 @@ std::vector<std::string> open_list(const std::string &list_name)
     current_list = grab_lists(list_name + ".txt");
     display_lists(current_list);
     return current_list;
+}
+
+void task_menu(std::vector<std::string> &list)
+{
+
 }
 
 int main()
@@ -135,6 +177,11 @@ int main()
             case 'A':
             {
                 lists = add_position(lists);
+                break;
+            }
+            case 'D':
+            {
+                lists = delete_position(lists);
                 break;
             }
             case 'Q':
