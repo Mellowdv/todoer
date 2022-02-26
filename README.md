@@ -6,7 +6,7 @@ The user should also be able to simply quit.
 
 The main "database" of lists should be saved in a .txt file.
 The lists themselves should also be saved in simple .txt format in the app's folder.
-Lists should be editable and provide task adding, marking as done and deleting functionality.
+Lists should be editable and provide task adding and deleting functionality.
 Lists should have names.
 
 The user should be able to exit a list and go back to the menu.

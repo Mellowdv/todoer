@@ -39,7 +39,7 @@ bool save(std::vector<std::string> &list, const std::string &list_name) // saves
 
 void display_main_menu()
 {
-    std::cout << "Welcome to Todoer";
+    std::cout << "\n\nWelcome to Todoer";
     std::cout << "\nThe available options are: "
               << "\nL - display all the To-do lists."
               << "\nO list number - opens a list (i.e. O 2, opens list no. 2)."
@@ -66,7 +66,7 @@ std::vector<std::string> add_position(std::vector<std::string> &list, const std:
     std::string user_input {};
     std::cin.ignore(1000, '\n');
     
-    std::cout << "\nEnter Q to discard changes and return to the menu."
+    std::cout << "\n\nEnter Q to discard changes and return to the menu."
               << "\nEnter S to save all changes and return to the menu."
               << "\nPlease enter a position (list or task name): ";
     while(getline(std::cin, user_input))
@@ -98,7 +98,7 @@ std::vector<std::string> delete_position(std::vector<std::string> &list, const s
     int position_no {0};
     std::cin >> position_no;
     char selection {};
-    std::cout << "Deleting position " << position_no << ", are you sure? (Y/N) ";
+    std::cout << "\nDeleting position " << position_no << ", are you sure? (Y/N) ";
     std::cin.ignore(1000, '\n');
     if (std::cin >> selection)
     {
@@ -108,13 +108,13 @@ std::vector<std::string> delete_position(std::vector<std::string> &list, const s
             case 'Y':
             {
                 list.erase(list.begin() + (position_no - 1));
-                std::cout << "Position deleted.\n";
+                std::cout << "\nPosition deleted.";
                 save(list, list_name);
                 break;
             }
             case 'N':
             {
-                std::cout << "Position was not deleted.\n";
+                std::cout << "\nPosition was not deleted.";
                 break;
             }
             default:
@@ -124,13 +124,19 @@ std::vector<std::string> delete_position(std::vector<std::string> &list, const s
     else
     {
         std::cin.ignore(1000, '\n');
-        std::cout << "Bad input";
+        std::cout << "\nBad input";
     }
     return list;
 }
 
 void display_lists(const std::vector<std::string> &lists_vector)
 {
+    if (lists_vector.size() == 0)
+    {
+        std::cout << "The index is empty, please add a list first.\n";
+        return;
+    }
+    std::cout << std::endl;
     for (size_t i = 0; i < lists_vector.size(); ++i)
         std::cout << i + 1 << ". " << lists_vector.at(i) << std::endl;
 }
@@ -143,9 +149,32 @@ std::vector<std::string> open_list(const std::string &list_name)
     return current_list;
 }
 
-void task_menu(std::vector<std::string> &list)
+void task_menu(std::vector<std::string> &list, const std::string &list_name)
 {
-
+    char selection {};
+    std::cout << "\n\nEnter 'A' to add a new task."
+              << "\nEnter 'D' to delete a task."
+              << "\nEnter 'Q' to return to the main menu.\n";
+    if (!(std::cin >> selection))
+        return;
+    selection = toupper(selection);
+    switch(selection)
+    {
+        case 'A':
+        {   
+            add_position(list, list_name);
+            break;
+        }
+        case 'D':
+        {
+            delete_position(list, list_name);
+            break;
+        }
+        case 'Q':
+            return;
+        default:
+            break;
+    }
 }
 
 int main()
@@ -166,22 +195,28 @@ int main()
             case 'L':
             {
                 display_lists(lists);
+                display_main_menu();
                 break;
             }
             case 'O':
             {
                 std::cin >> num_selection;
+                current_list_name = lists.at(num_selection - 1);
                 current_list = open_list(lists.at(num_selection - 1));
+                task_menu(current_list, current_list_name);
+                display_main_menu();
                 break;
             }
             case 'A':
             {
                 lists = add_position(lists);
+                display_main_menu();
                 break;
             }
             case 'D':
             {
                 lists = delete_position(lists);
+                display_main_menu();
                 break;
             }
             case 'Q':
@@ -192,7 +227,10 @@ int main()
             }
             default:
             {
-                std::cout << "Command not recognized\n";
+                std::string staying_open {};
+                std::cout << "\nError: Command not recognized\nPlease enter anything to continue.";
+                std::cin >> staying_open;
+                display_main_menu();
                 break;
             }
         }
